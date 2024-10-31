@@ -7,9 +7,8 @@
 <div align="center">
 
 # nonebot-plugin-antiinsult
-  
+
 _✨ NoneBot 反嘴臭插件 ✨_
-  
 
 <a href="./LICENSE">
     <img src="https://img.shields.io/github/license/tkgs0/nonebot-plugin-antiinsult.svg" alt="license">
@@ -29,28 +28,25 @@ _✨ NoneBot 反嘴臭插件 ✨_
 
 </div>
 
-
 ## TODO list
 
-- [ ] 概率不回复，防止高峰期被tx针对
-
+- [ ] 概率不回复，防止高峰期被 tx 针对
 
 ## 📖 介绍
-  
-**本插件为被动插件**  
-  
-检测到有用户 `@机器人` 并嘴臭时将其临时屏蔽(bot重启后失效)  
-当bot为群管理时会请对方喝昏睡红茶(禁言)  
-  
-- 超级用户不受临时屏蔽影响 _~~但是会被昏睡红茶影响~~_  
-- 当bot的群权限比超级用户高的时候, 超级用户也有机会品尝昏睡红茶  
-- 被bot灌了昏睡红茶的用户不会进临时黑名单  
-- 开启 **`对线模式`** 后不会被bot灌昏睡红茶和临时拉黑 (~~因为要对线~~)  
-  
-  
+
+**本插件为被动插件**
+
+检测到有用户 `@机器人` 并嘴臭时将其临时屏蔽(bot 重启后失效)  
+当 bot 为群管理时会请对方喝昏睡红茶(禁言)
+
+- 超级用户不受临时屏蔽影响 _~~但是会被昏睡红茶影响~~_
+- 当 bot 的群权限比超级用户高的时候, 超级用户也有机会品尝昏睡红茶
+- 被 bot 灌了昏睡红茶的用户不会进临时黑名单
+- 开启 **`对线模式`** 后不会被 bot 灌昏睡红茶和临时拉黑 (~~因为要对线~~)
+
 ## 💿 安装
 
-**nb-cli安装, 包管理器安装  二选一**
+**nb-cli 安装, 包管理器安装 二选一**
 
 <details>
 <summary>使用 nb-cli 安装</summary>
@@ -93,7 +89,7 @@ _✨ NoneBot 反嘴臭插件 ✨_
 
 </details>
 
-打开 bot项目下的 `pyproject.toml` 文件,
+打开 bot 项目下的 `pyproject.toml` 文件,
 
 在其 `plugins` 里加入 `nonebot_plugin_antiinsult`
 
@@ -104,13 +100,13 @@ _✨ NoneBot 反嘴臭插件 ✨_
 
 ## 🎉 使用
 
-在Bot目录下的 `.env` 文件内可添加以下变量以设置禁言时长:
+在 Bot 目录下的 `.env` 文件内可添加以下变量以设置禁言时长:
 
 ```env
 ANTI_INSULT_BAN_TIME=720
 ```
 
-单位为分钟, 默认值720分钟(12小时)
+单位为分钟, 默认值 720 分钟(12 小时)
 
 ### 指令表
 
@@ -150,10 +146,29 @@ ANTI_INSULT_BAN_TIME=720
     <td> 开启/关闭对线模式 </td>
 </table>
 
-P.S. `解除屏蔽` 可以解除临时屏蔽, 也可以解除禁言(当然, 需要bot为群管理).  
-  
-你说从聊天界面查看屏蔽词库? 噢, 我亲爱的老伙计, 你怕是疯了!  
-  
+P.S. `解除屏蔽` 可以解除临时屏蔽, 也可以解除禁言(当然, 需要 bot 为群管理).
+
+你说从聊天界面查看屏蔽词库? 噢, 我亲爱的老伙计, 你怕是疯了!
+
+## 配置
+
+```python
+class Config(BaseModel):
+    class ScopedConfig(BaseModel):
+        # 高峰期限制回复策略mode:
+        # 1. 不允许回复频率高于阈值，保持每分钟回复数量低于阈值
+        # 2. 允许回复频率高于阈值，但回复概率降低为：固定值 prob
+        # 3. 允许回复频率高于阈值，但回复概率降低为: 动态的 limit_send_msg / real_send_msg
+        mode: int = 1
+        # 阈值，每分钟服务多少次。
+        limits: int = 10
+        # 高峰期的回复概率。设置为 0 时 mode 2 等价于 mode 1
+        prob: float = 0.2
+
+    antiinsult: ScopedConfig
+
+```
+
 ## ⚠️ 注意事项
 
 **本插件目前仅支持 nonebot2 + onebot.v11 的使用方式, 一切非此二者结合的使用方式造成的问题请自行探索解决, 或者使用其他插件**
